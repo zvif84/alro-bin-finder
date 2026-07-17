@@ -1,0 +1,68 @@
+name: Email-in bin update
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  check-email:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install pandas openpyxl
+
+      - name: Check inbox for new spreadsheet
+        id: mail
+        env:
+          GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          ALLOWED_SENDERS: ${{ secrets.ALLOWED_SENDERS }}
+        run: python fetch_email.py
+
+      - name: Validate and build app with new data
+        if: steps.mail.outputs.updated == 'true'
+        run: python update_bins.py BINS.xlsx index.html
+
+      - name: Commit new spreadsheet to repo
+        if: steps.mail.outputs.updated == 'true'
+        run: |
+          git config user.name "bin-finder-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add BINS.xlsx
+          git commit -m "Bin data update received by email" || echo "Spreadsheet identical to current, still redeploying"
+          git push
+
+      - name: Prepare site folder
+        if: steps.mail.outputs.updated == 'true'
+        run: mkdir site && cp index.html site/
+
+      - name: Upload site
+        if: steps.mail.outputs.updated == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        if: steps.mail.outputs.updated == 'true'
+        id: deployment
+        uses: actions/deploy-pages@v4
