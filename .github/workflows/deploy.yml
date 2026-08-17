@@ -32,8 +32,8 @@ jobs:
       - name: Install dependencies
         run: pip install pandas openpyxl
 
-      - name: Inject latest spreadsheet data into the app
-        run: python update_bins.py BINS.xlsx index.html
+      - name: Inject latest data into the app
+        run: python update_bins.py auto index.html
 
       - name: Prepare site folder
         run: mkdir site && cp index.html site/
