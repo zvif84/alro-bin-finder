@@ -31,7 +31,7 @@ jobs:
       - name: Install dependencies
         run: pip install pandas openpyxl
 
-      - name: Check inbox for new spreadsheet
+      - name: Check inbox for new data file
         id: mail
         env:
           GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
@@ -41,15 +41,15 @@ jobs:
 
       - name: Validate and build app with new data
         if: steps.mail.outputs.updated == 'true'
-        run: python update_bins.py BINS.xlsx index.html
+        run: python update_bins.py auto index.html
 
-      - name: Commit new spreadsheet to repo
+      - name: Commit new data file to repo
         if: steps.mail.outputs.updated == 'true'
         run: |
           git config user.name "bin-finder-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add BINS.xlsx
-          git commit -m "Bin data update received by email" || echo "Spreadsheet identical to current, still redeploying"
+          git add -A
+          git commit -m "Bin data update received by email" || echo "Data identical to current, still redeploying"
           git push
 
       - name: Prepare site folder
