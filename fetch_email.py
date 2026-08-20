@@ -40,6 +40,7 @@ def newest_data_file_from_inbox():
     print(f'Unread emails: {len(ids)}')
 
     best = None  # (date, filename, bytes)
+    processed = []  # approved-sender messages get trashed after this poll
     for msg_id in ids:
         typ, msg_data = box.fetch(msg_id, '(RFC822)')  # fetching marks it read
         msg = email.message_from_bytes(msg_data[0][1])
@@ -47,6 +48,7 @@ def newest_data_file_from_inbox():
         if sender not in allowed:
             print(f'Ignoring email from unapproved sender: {sender}')
             continue
+        processed.append(msg_id)
         for part in msg.walk():
             name = (part.get_filename() or '').strip()
             if name.lower().endswith(ACCEPTED_EXTENSIONS):
@@ -60,6 +62,15 @@ def newest_data_file_from_inbox():
                 if best is None or when > best[0]:
                     best = (when, name, payload)
                 print(f'Found attachment "{name}" from {sender} ({when})')
+    # Move processed data emails to Trash (Gmail purges Trash after 30 days).
+    # At 48 scheduled reports/day this keeps the free inbox from ever filling up.
+    for msg_id in processed:
+        try:
+            box.store(msg_id, '+X-GM-LABELS', '\\Trash')
+        except Exception as e:
+            print(f'Note: could not trash message {msg_id}: {e}')
+    if processed:
+        print(f'Moved {len(processed)} processed email(s) to Trash.')
     box.logout()
     return best
 
