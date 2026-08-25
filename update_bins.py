@@ -81,13 +81,16 @@ def main():
     c_max   = find(lambda l: 'max' in l)
     c_shelf2 = find(lambda l: 'shelf' in l and '5' not in l)
     c_shelf5 = find(lambda l: '5' in l and ('hand' in l or 'shelf' in l))
+    c_bin5b  = find(lambda l: 'bin' in l and '5' in l and 'secondary' in l)
+    if c_bin5 and c_bin5 == c_bin5b:
+        c_bin5b = None  # guard against the same column matching both patterns
 
     missing = [n for n, c in [('part', c_part), ('product line', c_line),
                               ('description', c_desc), ('WH02 bin', c_bin2)] if c is None]
     if missing:
         sys.exit(f'ERROR: could not find required column(s): {missing}. Headers were: {cols}')
     print(f'Column map: part={c_part!r} kw={c_kw!r} line={c_line!r} desc={c_desc!r}\n'
-          f'  bin2={c_bin2!r} bin5={c_bin5!r} min={c_min!r} max={c_max!r} '
+          f'  bin2={c_bin2!r} bin5={c_bin5!r} bin5b={c_bin5b!r} min={c_min!r} max={c_max!r} '
           f'shelf2={c_shelf2!r} shelf5={c_shelf5!r}')
 
     rows = []
@@ -106,6 +109,7 @@ def main():
             clean_num(r[c_shelf2]) if c_shelf2 else '',
             clean(r[c_bin5]).upper() if c_bin5 else '',
             clean_num(r[c_shelf5]) if c_shelf5 else '',
+            clean(r[c_bin5b]).upper() if c_bin5b else '',
         ])
     if len(rows) < 100:
         sys.exit(f'ERROR: only {len(rows)} parts found — refusing to overwrite. Check the file.')
