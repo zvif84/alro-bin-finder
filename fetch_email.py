@@ -39,7 +39,7 @@ def newest_data_file_from_inbox():
     ids = data[0].split()
     print(f'Unread emails: {len(ids)}')
 
-    best = None  # (date, filename, bytes)
+    best = None  # (date, filename, bytes, sender)
     processed = []  # approved-sender messages get trashed after this poll
     for msg_id in ids:
         typ, msg_data = box.fetch(msg_id, '(RFC822)')  # fetching marks it read
@@ -60,7 +60,7 @@ def newest_data_file_from_inbox():
                 except Exception:
                     when = datetime.datetime.now(datetime.timezone.utc)
                 if best is None or when > best[0]:
-                    best = (when, name, payload)
+                    best = (when, name, payload, sender)
                 print(f'Found attachment "{name}" from {sender} ({when})')
     # Move processed data emails to Trash (Gmail purges Trash after 30 days).
     # At 48 scheduled reports/day this keeps the free inbox from ever filling up.
@@ -82,7 +82,7 @@ def main():
         with open(get_output_path(), 'a') as f:
             f.write('updated=false\n')
         return
-    when, name, payload = best
+    when, name, payload, sender = best
 
     ext = '.csv' if name.lower().endswith('.csv') else '.xlsx'
     target = 'BINS' + ext
@@ -93,9 +93,14 @@ def main():
         os.remove(stale)
         print(f'Removed stale {stale} (replaced by {target}).')
 
+    lag_min = (datetime.datetime.now(datetime.timezone.utc) - when).total_seconds() / 60
     print(f'Saved "{name}" as {target} ({len(payload):,} bytes). Rebuild will follow.')
+    print(f'Report sent {when:%Y-%m-%d %H:%M %Z} by {sender}; picked up {lag_min:.0f} min later.')
     with open(get_output_path(), 'a') as f:
         f.write('updated=true\n')
+        f.write(f'email_file={name}\n')
+        f.write(f'email_from={sender}\n')
+        f.write(f'email_sent_epoch={int(when.timestamp())}\n')
 
 
 if __name__ == '__main__':
