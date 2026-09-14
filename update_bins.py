@@ -127,8 +127,13 @@ def main():
         sys.exit('ERROR: could not find DATA block in HTML — file may be corrupted.')
 
     open(html_path, 'w', encoding='utf-8').write(new_html)
+
+    # Also emit data.json so the app can refresh its data live without a page reload
+    with open('data.json', 'w', encoding='utf-8') as f:
+        json.dump({'built': built, 'rows': rows}, f, separators=(',', ':'), ensure_ascii=True)
+
     wh5 = sum(1 for r in rows if r[8])
-    print(f'OK: {len(rows):,} parts written ({wh5:,} with a WH05 bin). Stamp: {built}.')
+    print(f'OK: {len(rows):,} parts written ({wh5:,} with a WH05 bin) to {html_path} + data.json. Stamp: {built}.')
 
 
 if __name__ == '__main__':
