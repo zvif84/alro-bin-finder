@@ -19,6 +19,7 @@ concurrency:
 jobs:
   check-email:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     environment:
       name: github-pages
     steps:
