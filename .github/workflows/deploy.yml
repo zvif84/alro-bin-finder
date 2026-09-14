@@ -36,7 +36,7 @@ jobs:
         run: python update_bins.py auto index.html
 
       - name: Prepare site folder
-        run: mkdir site && cp index.html site/
+        run: mkdir site && cp index.html data.json site/
 
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
