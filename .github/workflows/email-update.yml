@@ -3,6 +3,8 @@ name: Email-in bin update
 on:
   schedule:
     - cron: '*/5 * * * *'
+  repository_dispatch:
+    types: [email-received]
   workflow_dispatch:
 
 permissions:
@@ -91,7 +93,7 @@ jobs:
 
       - name: Prepare site folder
         if: steps.mail.outputs.updated == 'true'
-        run: mkdir site && cp index.html site/
+        run: mkdir site && cp index.html data.json site/
 
       - name: Upload site
         if: steps.mail.outputs.updated == 'true'
