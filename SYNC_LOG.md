@@ -4,6 +4,7 @@ Every successful email-in update, newest first. Lag = report sent to app rebuilt
 
 | Processed (ET) | Report sent (ET) | Lag | File | From |
 |---|---|---|---|---|
+| 2026-09-18 02:51 PM | 2026-09-18 02:50 PM | 1 min | 2026-09-18_all products with WH05_v03.csv | ivan@alroproducts.com |
 | 2026-09-18 12:29 PM | 2026-09-18 12:28 PM | 1 min | 2026-09-18_all products with WH05_v01.csv | ivan@alroproducts.com |
 | 2026-09-17 06:09 PM | 2026-09-17 06:08 PM | 1 min | 2026-09-17_all products with WH05_v02.csv | ivan@alroproducts.com |
 | 2026-09-16 05:18 PM | 2026-09-16 05:17 PM | 0 min | 2026-09-16_all products with WH05_v06.csv | ivan@alroproducts.com |
