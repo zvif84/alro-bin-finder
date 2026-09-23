@@ -12,16 +12,20 @@ permissions:
   pages: write
   id-token: write
 
+# Only one check-email job runs at a time. Not tied to the Pages environment,
+# so it is never auto-cancelled by GitHub's Pages deployment queue. Runs are
+# short (seconds), so queuing here (instead of cancelling) is safe and just
+# drains fast if several dispatches land close together.
 concurrency:
-  group: pages
+  group: check-email
   cancel-in-progress: false
 
 jobs:
   check-email:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    environment:
-      name: github-pages
+    outputs:
+      updated: ${{ steps.mail.outputs.updated }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -102,7 +106,22 @@ jobs:
         with:
           path: site
 
+  # Separate job: this is the ONLY part tied to the github-pages environment,
+  # so it's the only part GitHub's Pages queue is allowed to auto-cancel.
+  # If a newer deploy shows up, cancelling an older queued deploy here is
+  # harmless: the newer one has the latest data anyway.
+  deploy:
+    needs: check-email
+    if: needs.check-email.outputs.updated == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
       - name: Deploy to GitHub Pages
-        if: steps.mail.outputs.updated == 'true'
         id: deployment
         uses: actions/deploy-pages@v4
