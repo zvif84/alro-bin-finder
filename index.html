@@ -269,12 +269,12 @@ function placard5(r){
     // Stock exists in WH05 but no bin assigned yet: show it so workers know
     // overstock exists in Brooklyn, but nothing to tap into.
     if(r.shelf5 !== '' && Number(r.shelf5) > 0){
-      return '<div class="placard p5 p5-nobin"><span class="aisle">'+fmtN(r.shelf5)+' on hand</span>'
+      return '<div class="placard p5 p5-nobin"><span class="aisle">'+fmtN(r.shelf5)+' on shelf</span>'
         + '<span class="sub">WH05 &middot; no bin yet</span></div>';
     }
     return '';
   }
-  const qty = r.shelf5 === '' ? '' : ' &middot; '+fmtN(r.shelf5)+' on hand';
+  const qty = r.shelf5 === '' ? '' : ' &middot; '+fmtN(r.shelf5)+' on shelf';
   const primary = '<button class="placard p5" onclick="goBin(\''+esc(r.bin5).replace(/'/g,"\\'")+'\')" title="Show everything in '+esc(r.bin5)+'">'
     + '<span class="aisle">'+esc(r.bin5)+'</span><span class="sub">WH05'+qty+'</span></button>';
   if(!r.bin5b) return primary;
@@ -384,7 +384,7 @@ function render(){
       html += items.map(r => '<div class="binrow"><div class="desc">'+esc(r.desc)+'</div>'
         + '<div class="meta"><span class="pn">'+esc(r.part)+'</span>'
         + '<span class="chip">'+esc(r.line)+'</span>'
-        + (isW5 ? (r.shelf5!=='' ? '<span class="qty">'+fmtN(r.shelf5)+' on hand</span>' : '') : qtyHTML(r)) + '</div>'
+        + (isW5 ? (r.shelf5!=='' ? '<span class="qty">'+fmtN(r.shelf5)+' on shelf</span>' : '') : qtyHTML(r)) + '</div>'
         + (isW5 ? '' : stockHTML(r)) + '</div>').join('');
     }
     $out.innerHTML = html;
