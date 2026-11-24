@@ -4,6 +4,7 @@ Every successful email-in update, newest first. Lag = report sent to app rebuilt
 
 | Processed (ET) | Report sent (ET) | Lag | File | From |
 |---|---|---|---|---|
+| 2026-11-24 02:37 PM | 2026-11-24 02:36 PM | 1 min | ALRO_BIN_FINDER_20261124_193632_08584060579088303990484626708CU06.csv | zvi@alroproducts.com |
 | 2026-11-24 02:06 PM | 2026-11-24 02:05 PM | 1 min | ALRO_BIN_FINDER_20261124_190511_08584060598017249657046019827CU27.csv | zvi@alroproducts.com |
 | 2026-11-24 01:36 PM | 2026-11-24 01:35 PM | 0 min | ALRO_BIN_FINDER_20261124_183554_08584060615450501691491746981CU20.csv | zvi@alroproducts.com |
 | 2026-11-24 01:09 PM | 2026-11-24 01:08 PM | 1 min | ALRO_BIN_FINDER_20261124_180829_08584060631957132608971151899CU18.csv | zvi@alroproducts.com |
